@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <bean id="httpClient" class="com.chenxiaojie.http.invoker.spring.HttpClientFactoryBean">
+        <property name="connectionRequestTimeout" value="5000"></property>
+    </bean>
+
+    <bean id="httpParent" class="com.chenxiaojie.http.invoker.spring.HttpProxyFactoryBean" abstract="true"
+          init-method="init">
+        <property name="invocationHandler">
+            <bean class="com.chenxiaojie.http.invoker.proxy.HttpInvocationHandler">
+                <property name="requestUrlPrefix" value="http://localhost:8081/httpinvoker"></property>
+                <property name="openLog" value="true"></property>
+                <property name="httpClient" ref="httpClient"/>
+                <property name="interceptors">
+                    <list>
+                        <bean class="com.chenxiaojie.http.invoker.interceptor.BasicAuthInterceptor">
+                            <constructor-arg value="http-invoker"></constructor-arg>
+                            <constructor-arg value="123123321321"></constructor-arg>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+
+    <!-- 只需配置下方代码即可 -->
+    <bean id="simpleHttpApi" parent="httpParent">
+        <property name="proxyInterfaces" value="com.chenxiaojie.http.invoker.test.http.api.SimpleHttpApi"/>
+    </bean>
+</beans>

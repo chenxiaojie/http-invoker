@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <bean id="httpParent" class="com.chenxiaojie.http.invoker.spring.HttpProxyFactoryBean" abstract="true" init-method="init">
+        <property name="invocationHandler">
+            <bean class="com.chenxiaojie.http.invoker.proxy.HttpInvocationHandler">
+                <property name="requestUrlPrefix" value="http://localhost:8081/httpinvoker"></property>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- 只需配置下方代码即可 -->
+    <bean id="simpleHttpApi" parent="httpParent">
+        <property name="proxyInterfaces" value="com.chenxiaojie.http.invoker.test.http.api.SimpleHttpApi"/>
+    </bean>
+
+    <bean id="uploadFileApi" parent="httpParent">
+        <property name="proxyInterfaces" value="com.chenxiaojie.http.invoker.test.http.api.UploadFileApi"/>
+    </bean>
+
+    <bean id="retryHttpApi" parent="httpParent">
+        <property name="proxyInterfaces" value="com.chenxiaojie.http.invoker.test.http.api.RetryHttpApi"/>
+    </bean>
+
+    <bean id="resultJsonPathHttpApi" parent="httpParent">
+        <property name="proxyInterfaces" value="com.chenxiaojie.http.invoker.test.http.api.ResultJsonPathHttpApi"/>
+    </bean>
+</beans>

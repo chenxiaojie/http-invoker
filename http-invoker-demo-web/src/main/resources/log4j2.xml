@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="info">
+
+    <Properties>
+        <Property name="log-path">/data/applogs/http-invoker-demo-web/logs</Property>
+        <Property name="pattern">%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%t] [%c] %msg%xEx%n</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${pattern}"/>
+        </Console>
+
+        <RollingFile name="AppAppender" fileName="${log-path}/app.log" filePattern="${log-path}/app.log.%d{yyyy-MM-dd}">
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <!-- 这里的interval由filePattern中的最小时间单位来决定,如果filePattern中是天,这1就是1天-->
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+
+        <Async name="AsyncAppAppender">
+            <AppenderRef ref="AppAppender" level="info"/>
+        </Async>
+
+    </Appenders>
+
+    <loggers>
+        <root level="info">
+            <appender-ref ref="ConsoleAppender"/>
+            <appender-ref ref="AsyncAppAppender"/>
+        </root>
+    </loggers>
+
+</configuration>
