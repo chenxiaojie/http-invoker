@@ -366,7 +366,7 @@ public class HttpInvoker {
 
                 HttpEntity httpEntity = httpResponse.getEntity();
 
-                res.body = EntityUtils.toString(httpEntity, res.charSet);
+                res.bodyBytes = EntityUtils.toByteArray(httpEntity);
 
                 EntityUtils.consume(httpEntity);
             }
@@ -634,7 +634,9 @@ public class HttpInvoker {
 
         private int status = HttpStatus.SC_OK;
 
-        private String body = "";
+        private byte[] bodyBytes;
+
+        private String body = null;
 
         private Map<String, String> headers = Maps.newHashMap();
 
@@ -642,34 +644,35 @@ public class HttpInvoker {
 
         private String logString = null;
 
-        public int status() {
-            return status;
-        }
-
-        public Map<String, String> headers() {
-            return headers;
-        }
-
-        public String body() {
-            return body;
-        }
-
-        /**
-         * 将返回体转换成对象
-         *
-         * @param type
-         * @param <T>
-         * @return
-         */
-        public <T> T toType(Type type) {
-            if (String.class == type) {
-                return (T) body;
-            }
-            return JSON.parseObject(body, type);
+        public Charset charSet() {
+            return charSet;
         }
 
         public boolean isSuccess() {
             return success;
+        }
+
+        public int status() {
+            return status;
+        }
+
+        public byte[] bodyBytes() {
+            return bodyBytes;
+        }
+
+        public String body() {
+            if (body == null) {
+                if (bodyBytes == null) {
+                    body = "";
+                } else {
+                    body = new String(bodyBytes, charSet);
+                }
+            }
+            return body;
+        }
+
+        public Map<String, String> headers() {
+            return headers;
         }
 
         private StringBuilder getLog() {
@@ -684,13 +687,17 @@ public class HttpInvoker {
                 }
             }
 
-            log.append("responseBody: ")
-                    .append(body)
-                    .append('\n');
-            return log;
+            log.append("responseBody: ");
+            String body = body();
+            if (body.length() > 1000) {
+                log.append(body.substring(0, 1000)).append("...");
+            } else {
+                log.append(body);
+            }
+            return log.append('\n');
         }
 
-        public String getLogString() {
+        public String logString() {
             if (logString == null) {
                 logString = getLog().toString();
             }
@@ -699,16 +706,24 @@ public class HttpInvoker {
 
         public void log() {
             if (success) {
-                logger.info(getLogString());
-
+                logger.info(logString());
             } else {
-                logger.error(getLogString());
+                logger.error(logString());
             }
         }
 
-        @Override
-        public String toString() {
-            return body;
+        /**
+         * 将返回体转换成对象
+         *
+         * @param type
+         * @param <T>
+         * @return
+         */
+        public <T> T toType(Type type) {
+            if (String.class == type) {
+                return (T) body();
+            }
+            return JSON.parseObject(body(), type);
         }
     }
 

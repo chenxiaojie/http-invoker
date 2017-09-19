@@ -85,7 +85,7 @@ public class HttpInvocationHandler implements InvocationHandler {
                 result = parseSimpleResult(value, invokerMethod.getHttpInvokerMethodResult().getReturnType());
             }
         } catch (Throwable e) {
-            String errorMessage = "process responseBody error, errorMessage: " + e.getMessage() + "\n" + response.getLogString();
+            String errorMessage = "process responseBody error, errorMessage: " + e.getMessage() + "\n" + response.logString();
             logger.error(errorMessage, e);
             if (invokerMethod.getHttpInvokerMethodResult().isReturnHttpResult()) {
                 return HttpResult.fail(errorMessage);
@@ -109,10 +109,10 @@ public class HttpInvocationHandler implements InvocationHandler {
             try {
                 response = invokerMethod.getHttpInvoker().execute();
                 if (HttpStatus.SC_OK != response.status()) {
-                    throw new HttpRequestException("HttpStatusCode not 200, HttpStatusCode: " + response.status() + "\n" + response.getLogString());
+                    throw new HttpRequestException("HttpStatusCode not 200, HttpStatusCode: " + response.status() + "\n" + response.logString());
                 }
                 if (StringUtils.isEmpty(response.body())) {
-                    throw new HttpRequestException("body is empty\n" + response.getLogString());
+                    throw new HttpRequestException("body is empty\n" + response.logString());
                 }
                 break;
             } catch (HttpRequestException e) {
@@ -137,7 +137,7 @@ public class HttpInvocationHandler implements InvocationHandler {
         }
 
         if (!response.isSuccess()) {
-            throw new HttpRequestException(response.getLogString());
+            throw new HttpRequestException(response.logString());
         }
 
         return response;

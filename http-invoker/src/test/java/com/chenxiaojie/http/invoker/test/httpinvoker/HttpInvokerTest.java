@@ -11,6 +11,7 @@ import com.chenxiaojie.http.invoker.test.vo.UserLoginModel;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import junit.framework.Assert;
+import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.cookie.Cookie;
@@ -19,6 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -65,6 +68,16 @@ public class HttpInvokerTest {
                 .get();
 
         response.log();
+    }
+
+    @Test
+    public void testGet4() throws IOException {
+        HttpInvoker.Response response = HttpInvoker.builder()
+                .uri(Consts.URL + "/static/logo.png")
+                .get();
+        response.log();
+        //FileUtils.writeByteArrayToFile(new File("test.png"), response.bodyBytes());
+        Assert.assertTrue(response.isSuccess());
     }
 
     @Test
