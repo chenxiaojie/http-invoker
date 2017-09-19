@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <http.invoker.version>1.0.0</http.invoker.version>
+        <http.invoker.version>1.0.0-SNAPSHOT</http.invoker.version>
         <httpclient.version>4.5.1</httpclient.version>
         <codec.version>1.9</codec.version>
         <fastjson.version>1.2.29</fastjson.version>
@@ -31,11 +31,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.chenxiaojie</groupId>
-            <artifactId>http-invoker</artifactId>
-            <version>${http.invoker.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -230,6 +225,19 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>

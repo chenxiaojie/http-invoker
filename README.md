@@ -19,7 +19,7 @@
 <dependency>
     <groupId>com.chenxiaojie</groupId>
     <artifactId>http-invoker</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -534,6 +534,11 @@ spring xml
 </beans>
 ```
 
+### 打包命令
+
+mvn clean install -DskipTests -Dmaven.javadoc.skip=true
+
 ### 维护
 
 有任何问题请随时联系:陈孝杰, qq:3262515, email: 3262515@qq.com
+
