@@ -48,6 +48,8 @@ public class HttpInvoker {
 
     private static final String HTTP_TRANSACTION = "HTTP_TRANSACTION";
 
+    private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+
     private volatile static HttpClient DEFAULT_HTTP_CLIENT;
 
     private final HttpClient httpClient;
@@ -402,7 +404,7 @@ public class HttpInvoker {
 
     private static class Request {
 
-        private Charset charSet = Charset.forName("UTF-8");
+        private Charset charSet = DEFAULT_CHARSET;
 
         private URI uri;
 
@@ -619,7 +621,7 @@ public class HttpInvoker {
 
         private static final Logger logger = LoggerFactory.getLogger(Response.class);
 
-        private Charset charSet = Charset.forName("UTF-8");
+        private Charset charSet = DEFAULT_CHARSET;
 
         private boolean success = true;
 
