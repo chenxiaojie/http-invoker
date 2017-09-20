@@ -9,17 +9,14 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface PathVariable {
+
     /**
-     * 路径上参数的key
-     *
-     * @return
+     * @return 路径上参数的key
      */
     String value() default "";
 
     /**
-     * 当入参为空时,默认填写值
-     *
-     * @return
+     * @return 当入参为空时, 默认填写值
      */
     String defaultValue() default "";
 }

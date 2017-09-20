@@ -126,7 +126,7 @@ public class HttpClientBuilder {
      *
      * @param name  use HttpHeaders
      * @param value custom value
-     * @return
+     * @return HttpClientBuilder
      */
     public HttpClientBuilder header(String name, String value) {
         Args.notBlank(name, "name");

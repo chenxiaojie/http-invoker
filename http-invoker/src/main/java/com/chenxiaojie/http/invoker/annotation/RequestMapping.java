@@ -14,38 +14,27 @@ import java.lang.annotation.*;
 public @interface RequestMapping {
 
     /**
-     * 请求路径
-     *
-     * @return
+     * @return 请求路径
      */
     String value() default "";
 
     /**
-     * 请求方法
-     *
-     * @return
+     * @return 请求方法
      */
     HttpMethod method() default HttpMethod.GET;
 
     /**
-     * 支持msg.user.id/msg.user[1].id 表达式解析返回值
-     *
-     * @return
+     * @return 支持msg.user.id/msg.user[1].id 表达式解析返回值
      */
     String resultJsonPath() default "";
 
     /**
-     * 重试次数,默认不重试,当为1时,重试一次,共请求两次
-     *
-     * @return
+     * @return 重试次数, 默认不重试, 当为1时, 重试一次, 共请求两次
      */
     int retryTimes() default 0;
 
-
     /**
-     * 默认编码
-     *
-     * @return
+     * @return 默认编码
      */
     String charset() default "UTF-8";
 }

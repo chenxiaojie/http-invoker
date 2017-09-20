@@ -11,16 +11,12 @@ import java.lang.annotation.*;
 public @interface RequestFile {
 
     /**
-     * 文件名,必填
-     *
-     * @return
+     * @return 文件名, 必填
      */
     String value() default "attachment.png";
 
     /**
-     * 上传时的表单名,选填
-     *
-     * @return
+     * @return 上传时的表单名, 选填
      */
     String inputName() default "file";
 }

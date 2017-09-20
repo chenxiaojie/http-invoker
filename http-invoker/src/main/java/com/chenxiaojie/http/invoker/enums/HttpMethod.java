@@ -7,29 +7,36 @@ import org.apache.http.client.methods.*;
  */
 public enum HttpMethod {
 
-    GET(HttpGet.class, HttpEntityEnclosingRequestBase.class.isAssignableFrom(HttpGet.class), true),
+    GET(HttpGet.class, false, true),
+
     /**
      * 官方推荐当上传文件等multipart的表单只能使用POST
      */
-    POST(HttpPost.class, HttpEntityEnclosingRequestBase.class.isAssignableFrom(HttpPost.class), true),
+    POST(HttpPost.class, true, true),
+
     /**
      * 不支持multipart
      */
-    PUT(HttpPut.class, HttpEntityEnclosingRequestBase.class.isAssignableFrom(HttpPut.class), true),
-    DELETE(HttpDelete.class, HttpEntityEnclosingRequestBase.class.isAssignableFrom(HttpDelete.class), true),
+    PUT(HttpPut.class, true, true),
+
+    DELETE(HttpDelete.class, false, true),
+
     /**
      * 不支持multipart
      */
-    PATCH(HttpPatch.class, HttpEntityEnclosingRequestBase.class.isAssignableFrom(HttpPatch.class), true),
+    PATCH(HttpPatch.class, true, true),
 
     /**
      * 下方请求无返回内容,不符合本框架的主要功能,尽量不要使用
      */
-    HEAD(HttpHead.class, HttpEntityEnclosingRequestBase.class.isAssignableFrom(HttpHead.class), false),
-    OPTIONS(HttpOptions.class, HttpEntityEnclosingRequestBase.class.isAssignableFrom(HttpOptions.class), false),
-    TRACE(HttpTrace.class, HttpEntityEnclosingRequestBase.class.isAssignableFrom(HttpTrace.class), false);
+    HEAD(HttpHead.class, false, false),
+    OPTIONS(HttpOptions.class, false, false),
+    TRACE(HttpTrace.class, false, false);
 
     private final Class<? extends HttpRequestBase> clazz;
+    /**
+     * HttpEntityEnclosingRequestBase.class.isAssignableFrom(HttpGet.class)
+     */
     private final boolean hasRequestBody;
     private final boolean hasResponseBody;
 

@@ -62,9 +62,7 @@ public class HttpInvoker {
     }
 
     /**
-     * 返回一个共享httpClient的HttpInvoker
-     *
-     * @return
+     * @return 返回一个共享httpClient的HttpInvoker
      */
     public static HttpInvoker builder() {
         if (DEFAULT_HTTP_CLIENT == null) {
@@ -78,10 +76,8 @@ public class HttpInvoker {
     }
 
     /**
-     * 返回一个独享httpClient的HttpInvoker,传入自身维护的httpClient,qps高,高性能模式下使用
-     *
-     * @param httpClient
-     * @return
+     * @param httpClient httpClient
+     * @return 返回一个独享httpClient的HttpInvoker, 传入自身维护的httpClient, qps高, 高性能模式下使用
      */
     public static HttpInvoker builder(HttpClient httpClient) {
         return new HttpInvoker(httpClient);
@@ -130,7 +126,7 @@ public class HttpInvoker {
      * @param name        type="file"时name属性,例如:file
      * @param filename    例如:attachment.png
      * @param inputStream 文件流
-     * @return
+     * @return HttpInvoker
      */
     public HttpInvoker data(String name, String filename, InputStream inputStream) {
         Args.check(filename.lastIndexOf(".") != -1, "filename must contains dot, such as attachment.png");
@@ -303,8 +299,8 @@ public class HttpInvoker {
     /**
      * 支持多次重入
      *
-     * @return
-     * @throws HttpRequestException
+     * @return Response
+     * @throws HttpRequestException HttpRequestException
      */
     public Response execute() throws HttpRequestException {
 
@@ -366,6 +362,17 @@ public class HttpInvoker {
 
                 HttpEntity httpEntity = httpResponse.getEntity();
 
+                try {
+                    final ContentType contentType = ContentType.get(httpEntity);
+                    if (contentType != null) {
+                        Charset charset = contentType.getCharset();
+                        if (charset != null) {
+                            res.charSet = charset;
+                        }
+                    }
+                } catch (Exception ex) {
+                }
+
                 res.bodyBytes = EntityUtils.toByteArray(httpEntity);
 
                 EntityUtils.consume(httpEntity);
@@ -412,45 +419,35 @@ public class HttpInvoker {
         private List<Interceptor> interceptors;
 
         /**
-         * 是否有jsonbody
-         *
-         * @return
+         * @return 是否有jsonbody
          */
         private boolean hasJSON() {
             return StringUtils.isNotEmpty(json);
         }
 
         /**
-         * 是否有参数
-         *
-         * @return
+         * @return 是否有参数
          */
         private boolean hasParameter() {
             return parameters != null && parameters.size() > 0;
         }
 
         /**
-         * 是否有头部
-         *
-         * @return
+         * @return 是否有头部
          */
         private boolean hasHeader() {
             return headers != null && headers.size() > 0;
         }
 
         /**
-         * 是否有cookie
-         *
-         * @return
+         * @return 是否有cookie
          */
         private boolean hasCookie() {
             return cookies != null && cookies.size() > 0;
         }
 
         /**
-         * 是否有文件
-         *
-         * @return
+         * @return 是否有文件
          */
         private boolean needsMultipart() {
             for (Parameter parameter : parameters) {
@@ -466,9 +463,7 @@ public class HttpInvoker {
         }
 
         /**
-         * 没有body的请求将参数放在url后面
-         *
-         * @return
+         * @return 没有body的请求将参数放在url后面
          */
         private String getParameterString() {
             if (hasParameter()) {
@@ -488,9 +483,7 @@ public class HttpInvoker {
         }
 
         /**
-         * 打日志专用
-         *
-         * @return
+         * @return 打日志专用
          */
         private String parameterToString() {
             if (hasParameter()) {
@@ -508,9 +501,7 @@ public class HttpInvoker {
         }
 
         /**
-         * 组装cookie的字符串
-         *
-         * @return
+         * @return 组装cookie的字符串
          */
         private String getCookieString() {
             if (hasCookie()) {
@@ -715,9 +706,9 @@ public class HttpInvoker {
         /**
          * 将返回体转换成对象
          *
-         * @param type
-         * @param <T>
-         * @return
+         * @param type 转换类型
+         * @param <T>  泛型
+         * @return 返回类型对象
          */
         public <T> T toType(Type type) {
             if (String.class == type) {
@@ -731,9 +722,9 @@ public class HttpInvoker {
         /**
          * 请求前的拦截
          *
-         * @param httpRequestBase
+         * @param httpRequestBase httpRequestBase
          * @return 返回false, 则结束请求
-         * @throws HttpRequestException
+         * @throws HttpRequestException HttpRequestException
          */
         boolean intercept(HttpRequestBase httpRequestBase) throws HttpRequestException;
     }

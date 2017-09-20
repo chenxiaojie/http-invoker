@@ -11,16 +11,12 @@ import java.lang.annotation.*;
 public @interface RequestParam {
 
     /**
-     * 参数名
-     *
-     * @return
+     * @return 参数名
      */
     String value() default "";
 
     /**
-     * 当参数为空时,默认填写值
-     *
-     * @return
+     * @return 当参数为空时, 默认填写值
      */
     String defaultValue() default "";
 }
