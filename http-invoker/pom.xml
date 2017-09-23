@@ -13,7 +13,7 @@
     <groupId>com.chenxiaojie</groupId>
     <artifactId>http-invoker</artifactId>
     <name>${artifactId}</name>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <properties>
         <java.src.version>1.7</java.src.version>
