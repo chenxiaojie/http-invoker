@@ -55,271 +55,102 @@ http-invoker-demo-web module是专门用于测试, 运行以下代码时, 请先
 ##### 使用HttpInvoker, 参考测试包下com.chenxiaojie.http.invoker.test.httpinvoker.HttpInvokerTest
 
 ```java
-public class HttpInvokerTest {
 
-    @Test
-    public void testGet() {
-        HttpInvoker.Response response = HttpInvoker.builder()
-                .uri(Consts.URL + "/simple/1")
-                .data("employeeId", "00160041")
-                .data(ImmutableMap.of("employeeName", "陈孝杰1"))
-                .data("ad", "xiaojie.chen", "ad", "xiaojie.chen1")
-                .method(HttpMethod.GET)
-                .execute();
+@Test
+public void testGet() {
+     HttpInvoker.Response response = HttpInvoker.builder()
+                    .uri(Consts.URL + "/simple/2")
+                    .data("employeeId", "00160042")
+                    .data(ImmutableMap.of("employeeName", "陈孝杰2"))
+                    .data("ad", "xiaojie.chen", "ad", "xiaojie.chen2")
+                    .get();
+    
+    response.log();
+    Assert.assertTrue(response.isSuccess());
+}
+   
 
-        response.log();
-        Assert.assertTrue(response.isSuccess());
-    }
+@Test
+public void testPost() {
+    InputStream in = Thread.currentThread().getClass().getResourceAsStream("/logo.png");
+    InputStream in2 = Thread.currentThread().getClass().getResourceAsStream("/logo.png");
+    HttpInvoker.Response response = HttpInvoker.builder()
+            .uri(Consts.URL + "/file")
+            .data("employeeId", "00160043")
+            .data(ImmutableMap.of("employeeName", "陈孝杰3"))
+            .data("ad", "xiaojie.chen", "ad", "xiaojie.chen3")
+            .data("fileinput", "attachment.png", in)
+            .data("fileinput2", "attachment2.png", in2)
+            .post();
 
-    @Test
-    public void testGet2() {
-        HttpInvoker.Response response = HttpInvoker.builder()
-                .uri(Consts.URL + "/simple/2")
-                .data("employeeId", "00160042")
-                .data(ImmutableMap.of("employeeName", "陈孝杰2"))
-                .data("ad", "xiaojie.chen", "ad", "xiaojie.chen2")
-                .get();
+    response.log();
+    Assert.assertTrue(response.isSuccess());
+}
 
-        response.log();
-        Assert.assertTrue(response.isSuccess());
-    }
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+@Test
+public void testCookie() {
+    BasicClientCookie cookie1 = new BasicClientCookie("Auth", "AuthAuth");
+    cookie1.setPath("/");
+    cookie1.setDomain("localhost");
 
-    @Test
-    public void testGet3() {
-        thrown.expect(HttpRequestException.class);
+    BasicClientCookie cookie2 = new BasicClientCookie("Auth2", "Auth2Auth2");
+    cookie2.setPath("/");
+    cookie2.setDomain("localhost");
 
-        HttpInvoker.Response response = HttpInvoker.builder(HttpClientBuilder.builder().followRedirects(true).build())
-                .uri(Consts.URL + "/redirect/loop")
-                .get();
+    BasicClientCookie cookie3 = new BasicClientCookie("Auth3", "Auth3Auth3");
+    cookie3.setPath("/");
+    cookie3.setDomain("localhost");
 
-        response.log();
-    }
+    HttpInvoker.Response response = HttpInvoker.builder(HttpClientBuilder.builder()
+            .header("AAA", "VVV")
+            .header(HttpHeaders.USER_AGENT, "VVVVVVFSDSFSF")
+            .cookie(cookie1)
+            .cookies(Lists.<Cookie>newArrayList(cookie2, cookie3))
+            .build())
+            .uri(Consts.URL + "/simple/3")
+            .data("employeeId", "00160041")
+            .data(ImmutableMap.of("employeeName", "陈孝杰1"))
+            .data("ad", "xiaojie.chen", "ad", "xiaojie.chen1")
+            .header("AAA", "BBB")
+            .header("AAA", "BBB2")
+            .headers(ImmutableMap.of("BBB", "CCC"))
+            .headers(ImmutableMap.of(HttpHeaders.USER_AGENT, "ASSSDDSDSDD"))
+            .cookie("Auth", "123")
+            .cookies(ImmutableMap.of("Auth5", "Auth5Auth5", "Auth6", "Auth6Auth6"))
+            .get();
 
-    @Test
-    public void testPost() {
-        HttpInvoker.Response response = HttpInvoker.builder()
-                .uri(Consts.URL + "/simple/3")
-                .data("employeeId", "00160043")
-                .data(ImmutableMap.of("employeeName", "陈孝杰3"))
-                .data("ad", "xiaojie.chen", "ad", "xiaojie.chen3")
-                .post();
+    response.log();
+    Assert.assertTrue(response.isSuccess());
+}
 
-        response.log();
-        Assert.assertTrue(response.isSuccess());
-    }
 
-    @Test
-    public void testPost2() {
-        UserLoginModel userLoginModel = new UserLoginModel();
-        userLoginModel.setLoginId(5);
-        userLoginModel.setEmployeeId("0016004");
-        userLoginModel.setEmployeeName("陈孝杰");
-        userLoginModel.setAd("xiaojie.chen");
+@Test
+public void testInterceptor() {
 
-        HttpInvoker.Response response = HttpInvoker.builder()
-                .uri(Consts.URL + "/simple?employeeName=employeeName陈孝杰")
-                .data("ad", "xiaojie.chen", "ad", "xiaojie.chen3")
-                .json(JSON.toJSONString(userLoginModel))
-                .post();
+    HttpInvoker.Response response = HttpInvoker.builder()
+            .uri(Consts.URL + "/simple/3")
+            .data("employeeId", "00160041")
+            .data(ImmutableMap.of("employeeName", "陈孝杰1"))
+            .data("ad", "xiaojie.chen", "ad", "xiaojie.chen1")
+            .header("AAA", "BBB")
+            .header("AAA", "BBB2")
+            .headers(ImmutableMap.of("BBB", "CCC"))
+            .headers(ImmutableMap.of(HttpHeaders.USER_AGENT, "ASSSDDSDSDD"))
+            .cookie("Auth", "123")
+            .cookies(ImmutableMap.of("Auth5", "Auth5Auth5", "Auth6", "Auth6Auth6"))
+            .interceptor(new HttpInvoker.Interceptor() {
+                @Override
+                public boolean intercept(HttpRequestBase httpRequestBase) throws HttpRequestException {
+                    System.out.println(httpRequestBase);
+                    return true;
+                }
+            })
+            .interceptor(new BasicAuthInterceptor("AAA", "BBB", "UTF-8"))
+            .get();
 
-        response.log();
-        Assert.assertTrue(response.isSuccess());
-    }
-
-    @Test
-    public void testPost3() {
-        InputStream in = Thread.currentThread().getClass().getResourceAsStream("/logo.png");
-        InputStream in2 = Thread.currentThread().getClass().getResourceAsStream("/logo.png");
-        HttpInvoker.Response response = HttpInvoker.builder()
-                .uri(Consts.URL + "/file")
-                .data("employeeId", "00160043")
-                .data(ImmutableMap.of("employeeName", "陈孝杰3"))
-                .data("ad", "xiaojie.chen", "ad", "xiaojie.chen3")
-                .data("fileinput", "attachment.png", in)
-                .data("fileinput2", "attachment2.png", in2)
-                .post();
-
-        response.log();
-        Assert.assertTrue(response.isSuccess());
-    }
-
-    @Test
-    public void testPut() {
-
-        UserLoginModel userLoginModel = new UserLoginModel();
-        userLoginModel.setEmployeeId("0016004");
-        userLoginModel.setEmployeeName("陈孝杰");
-        userLoginModel.setAd("xiaojie.chen");
-
-        HttpInvoker.Response response = HttpInvoker.builder()
-                .uri(Consts.URL + "/simple/1")
-                .json(JSON.toJSONString(userLoginModel))
-                .put();
-
-        response.log();
-        Assert.assertTrue(response.isSuccess());
-    }
-
-    @Test
-    public void testPatch() {
-
-        UserLoginModel userLoginModel = new UserLoginModel();
-        userLoginModel.setEmployeeId("0016004");
-        userLoginModel.setEmployeeName("陈孝杰");
-        userLoginModel.setAd("xiaojie.chen");
-
-        HttpInvoker.Response response = HttpInvoker.builder()
-                .uri(Consts.URL + "/simple/2")
-                .json(JSON.toJSONString(userLoginModel))
-                .patch();
-
-        response.log();
-        Assert.assertTrue(response.isSuccess());
-    }
-
-    @Test
-    public void testDelete() {
-        HttpInvoker.Response response = HttpInvoker.builder()
-                .uri(Consts.URL + "/simple/1")
-                .data("aa", "陈孝杰")
-                .delete();
-
-        response.log();
-        Assert.assertTrue(response.isSuccess());
-    }
-
-    @Test
-    public void testHead() {
-        HttpInvoker.Response response = HttpInvoker.builder()
-                .uri(Consts.URL + "/simple/2")
-                .head();
-
-        response.log();
-        Assert.assertTrue(response.isSuccess());
-    }
-
-    @Test
-    public void testOptions() {
-        HttpInvoker.Response response = HttpInvoker.builder()
-                .uri(Consts.URL + "/simple/3")
-                .options();
-
-        response.log();
-        Assert.assertTrue(response.isSuccess());
-    }
-
-    @Test
-    public void testTrace() {
-        HttpInvoker.Response response = HttpInvoker.builder()
-                .uri(Consts.URL + "/simple/4")
-                .trace();
-
-        response.log();
-        Assert.assertTrue(response.isSuccess());
-    }
-
-    @Test
-    public void testTrace2() {
-        HttpRequestException httpRequestException = null;
-        try {
-            HttpInvoker.Response response = HttpInvoker.builder(HttpClientBuilder.builder().followRedirects(true).build())
-                    .uri(Consts.URL + "/redirect/loop")
-                    .trace();
-            response.log();
-        } catch (HttpRequestException e) {
-            httpRequestException = e;
-        }
-
-        Assert.assertNull(httpRequestException);
-    }
-
-    @Test
-    public void testHeaders() {
-        HttpInvoker.Response response = HttpInvoker.builder(HttpClientBuilder.builder()
-                .header("AAA", "VVV")
-                .header(HttpHeaders.USER_AGENT, "VVVVVVFSDSFSF")
-                .build())
-                .uri(Consts.URL + "/simple/3")
-                .data("employeeId", "00160041")
-                .data(ImmutableMap.of("employeeName", "陈孝杰1"))
-                .data("ad", "xiaojie.chen", "ad", "xiaojie.chen1")
-                .header("AAA", "BBB")
-                .header("AAA", "BBB2")
-                .headers(ImmutableMap.of("BBB", "CCC"))
-                .headers(ImmutableMap.of(HttpHeaders.USER_AGENT, "ASSSDDSDSDD"))
-                .get();
-
-        response.log();
-        Assert.assertTrue(response.isSuccess());
-    }
-
-    @Test
-    public void testCookie() {
-        BasicClientCookie cookie1 = new BasicClientCookie("Auth", "AuthAuth");
-        cookie1.setPath("/");
-        cookie1.setDomain("localhost");
-
-        BasicClientCookie cookie2 = new BasicClientCookie("Auth2", "Auth2Auth2");
-        cookie2.setPath("/");
-        cookie2.setDomain("localhost");
-
-        BasicClientCookie cookie3 = new BasicClientCookie("Auth3", "Auth3Auth3");
-        cookie3.setPath("/");
-        cookie3.setDomain("localhost");
-
-        HttpInvoker.Response response = HttpInvoker.builder(HttpClientBuilder.builder()
-                .header("AAA", "VVV")
-                .header(HttpHeaders.USER_AGENT, "VVVVVVFSDSFSF")
-                .cookie(cookie1)
-                .cookies(Lists.<Cookie>newArrayList(cookie2, cookie3))
-                .build())
-                .uri(Consts.URL + "/simple/3")
-                .data("employeeId", "00160041")
-                .data(ImmutableMap.of("employeeName", "陈孝杰1"))
-                .data("ad", "xiaojie.chen", "ad", "xiaojie.chen1")
-                .header("AAA", "BBB")
-                .header("AAA", "BBB2")
-                .headers(ImmutableMap.of("BBB", "CCC"))
-                .headers(ImmutableMap.of(HttpHeaders.USER_AGENT, "ASSSDDSDSDD"))
-                .cookie("Auth", "123")
-                .cookies(ImmutableMap.of("Auth5", "Auth5Auth5", "Auth6", "Auth6Auth6"))
-                .get();
-
-        response.log();
-        Assert.assertTrue(response.isSuccess());
-    }
-
-    @Test
-    public void testInterceptor() {
-
-        HttpInvoker.Response response = HttpInvoker.builder()
-                .uri(Consts.URL + "/simple/3")
-                .data("employeeId", "00160041")
-                .data(ImmutableMap.of("employeeName", "陈孝杰1"))
-                .data("ad", "xiaojie.chen", "ad", "xiaojie.chen1")
-                .header("AAA", "BBB")
-                .header("AAA", "BBB2")
-                .headers(ImmutableMap.of("BBB", "CCC"))
-                .headers(ImmutableMap.of(HttpHeaders.USER_AGENT, "ASSSDDSDSDD"))
-                .cookie("Auth", "123")
-                .cookies(ImmutableMap.of("Auth5", "Auth5Auth5", "Auth6", "Auth6Auth6"))
-                .interceptor(new HttpInvoker.Interceptor() {
-                    @Override
-                    public boolean intercept(HttpRequestBase httpRequestBase) throws HttpRequestException {
-                        System.out.println(httpRequestBase);
-                        return true;
-                    }
-                })
-                .interceptor(new BasicAuthInterceptor("AAA", "BBB", "UTF-8"))
-                .get();
-
-        response.log();
-        Assert.assertTrue(response.isSuccess());
-    }
-
+    response.log();
+    Assert.assertTrue(response.isSuccess());
 }
 ```
 
@@ -330,12 +161,7 @@ java api
 ```java
 public interface SimpleHttpApi {
 
-    @RequestMapping("/simple/{loginId}")
-    Response<UserLoginModel> queryByLoginId(@PathVariable("loginId") int loginId);
-
-    @RequestMapping("/simple/{loginId}")
-    HttpResult<Response<UserLoginModel>> queryHttpResultByLoginId(@PathVariable("loginId") int loginId);
-
+    //get
     @RequestMapping(value = "/simple/{loginId}", method = HttpMethod.GET)
     Response<UserLoginModel> getByLoginId(@PathVariable("loginId") int loginId,
                                           @RequestParam(value = "employeeId") String employeeId,
@@ -343,25 +169,7 @@ public interface SimpleHttpApi {
                                           @RequestParam(value = "ad") String ad);
 
 
-    @RequestMapping(value = "/simple/{loginId}", method = HttpMethod.POST)
-    Response<UserLoginModel> addByLoginId(@PathVariable("loginId") int loginId,
-                                          @RequestParam(value = "employeeId") String employeeId,
-                                          @RequestParam(value = "employeeName") String employeeName,
-                                          @RequestParam(value = "ad") String ad);
-
-
-    @RequestMapping(value = "/simple", method = HttpMethod.POST)
-    Response<UserLoginModel> addUser(UserLoginModel userLoginModel);
-
-    @RequestMapping(value = "/simple", method = HttpMethod.POST)
-    HttpResult<Response<UserLoginModel>> addUser2(@RequestBody UserLoginModel userLoginModel);
-
-    @RequestMapping(value = "/simple", method = HttpMethod.POST)
-    HttpResult<Response<UserLoginModel>> addUser3(String userLoginModel);
-
-    @RequestMapping(value = "/simple", method = HttpMethod.POST)
-    HttpResult<Response<UserLoginModel>> addUser4(@RequestBody String userLoginModel);
-
+    //post
     @RequestMapping(value = "/{path}", method = HttpMethod.POST)
     HttpResult<Response<UserLoginModel>> addUser5(@RequestBody UserLoginModel userLoginModel,
                                                   @PathVariable("path") String path,
@@ -370,34 +178,32 @@ public interface SimpleHttpApi {
                                                   @RequestParam(value = "employeeId") String employeeId3,
                                                   @RequestParam(value = "employeeName") String employeeName,
                                                   @RequestParam(value = "ad") String ad);
-
-    @RequestMapping(value = "/simple/{loginId}", method = HttpMethod.PUT)
-    HttpResult<Response<UserLoginModel>> updateUser(@RequestBody UserLoginModel userLoginModel,
-                                                    @PathVariable("loginId") int loginId,
-                                                    @RequestParam(value = "employeeId") String employeeId,
-                                                    @RequestParam(value = "employeeId") String employeeId2,
-                                                    @RequestParam(value = "employeeId") String employeeId3,
-                                                    @RequestParam(value = "employeeName") String employeeName,
-                                                    @RequestParam(value = "ad") String ad);
-
-    @RequestMapping(value = "/simple/{loginId}", method = HttpMethod.PATCH)
-    HttpResult<Response<UserLoginModel>> patchUser(@RequestBody UserLoginModel userLoginModel,
-                                                   @PathVariable("loginId") int loginId,
-                                                   @RequestParam(value = "employeeId") String employeeId,
-                                                   @RequestParam(value = "employeeId") String employeeId2,
-                                                   @RequestParam(value = "employeeId") String employeeId3,
-                                                   @RequestParam(value = "employeeName") String employeeName,
-                                                   @RequestParam(value = "ad") String ad);
-
-
-    @RequestMapping(value = "/simple/{loginId}", method = HttpMethod.DELETE)
-    HttpResult<String> deleteUser(@RequestBody UserLoginModel userLoginModel,
-                                  @PathVariable("loginId") int loginId,
-                                  @RequestParam(value = "employeeId") String employeeId,
-                                  @RequestParam(value = "employeeId") String employeeId2,
-                                  @RequestParam(value = "employeeId") String employeeId3,
-                                  @RequestParam(value = "employeeName") String employeeName,
-                                  @RequestParam(value = "ad") String ad);
+    
+    
+    //upload
+    @RequestMapping(value = "/{path}", method = HttpMethod.POST)
+    HttpResult<Response<String>> upload(@RequestFile("a1.png") InputStream in,
+                                        @RequestFile("a2.png") File file,
+                                        @RequestFile("a3.png") byte[] fileBytes,
+                                        @RequestFile("a4.png") String base64,
+                                        @PathVariable("path") String path,
+                                        @RequestParam(value = "employeeId") String employeeId,
+                                        @RequestParam(value = "employeeId") String employeeId2,
+                                        @RequestParam(value = "employeeId") String employeeId3,
+                                        @RequestParam(value = "employeeName") String employeeName,
+                                        @RequestParam(value = "ad") String ad);
+    
+    //retry
+    @RequestMapping(value = "/simple/{loginId}", method = HttpMethod.GET, retryTimes = 1)
+    HttpResult<Response<UserLoginModel>> getByLoginId(@PathVariable("loginId") String loginId,
+                                                          @RequestParam(value = "employeeId") String employeeId,
+                                                          @RequestParam(value = "employeeName") String employeeName,
+                                                          @RequestParam(value = "ad") String ad);
+    
+    
+    //jsonPath
+    @RequestMapping(value = "/simple/list", method = HttpMethod.GET, retryTimes = 1, resultJsonPath = "data[1].employeeName")
+    String queryUsers();
 
 }
 ```

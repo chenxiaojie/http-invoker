@@ -166,6 +166,7 @@ public class HttpInvoker {
     }
 
     public HttpInvoker json(Object json) {
+        Args.notNull(json, "json");
         if (json instanceof String) {
             return json((String) json);
         } else {

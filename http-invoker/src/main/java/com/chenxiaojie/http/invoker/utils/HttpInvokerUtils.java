@@ -27,6 +27,16 @@ import java.util.concurrent.ConcurrentMap;
 @ThreadSafe
 public abstract class HttpInvokerUtils {
 
+    /**
+     * 构造 HttpInvokerMethod
+     * @param httpClient
+     * @param requestUrlPrefix
+     * @param interceptors
+     * @param method
+     * @param arguments
+     * @return HttpInvokerMethod
+     * @throws FileNotFoundException
+     */
     public static HttpInvokerMethod generateHttpInvokerMethod(HttpClient httpClient, String requestUrlPrefix, List<HttpInvoker.Interceptor> interceptors, final Method method, final Object[] arguments) throws FileNotFoundException {
 
         Args.notNull(method, "method can not be null");
@@ -48,40 +58,46 @@ public abstract class HttpInvokerUtils {
             for (int i = 0; i < paramTypes.length; i++) {
 
                 Annotation[] paramAnnotation = paramAnnotations[i];
+
+                // 只有一个参数并且没有注解认为是json
                 if (paramTypes.length == 1 && paramAnnotation.length == 0) {
-                    httpInvoker.json(arguments[i]);
+                    if (arguments[i] != null) {
+                        httpInvoker.json(arguments[i]);
+                    }
                     break;
                 }
 
-                for (Annotation annotation : paramAnnotation) {
+                // 如果有注解
+                if (paramAnnotation.length > 0) {
+                    Annotation annotation = paramAnnotation[0];
                     if (annotation instanceof RequestParam) {
                         RequestParam requestParam = (RequestParam) annotation;
                         httpInvoker.data(requestParam.value(), arguments[i] == null ? requestParam.defaultValue() : toString(arguments[i]));
-                        break;
                     } else if (annotation instanceof RequestBody) {
-                        httpInvoker.json(arguments[i]);
-                        break;
+                        if (arguments[i] != null) {
+                            httpInvoker.json(arguments[i]);
+                        }
                     } else if (annotation instanceof PathVariable) {
                         PathVariable pathVariable = (PathVariable) annotation;
                         replacePathVariable(url, pathVariable.value(), arguments[i] == null ? pathVariable.defaultValue() : toString(arguments[i]));
-                        break;
                     } else if (annotation instanceof RequestFile) {
                         RequestFile requestFile = (RequestFile) annotation;
-                        InputStream in = null;
-                        if (arguments[i] instanceof InputStream) {
-                            in = (InputStream) arguments[i];
-                        } else if (arguments[i] instanceof File) {
-                            in = new FileInputStream((File) arguments[i]);
-                        } else if (arguments[i] instanceof String) {
-                            byte[] bytes = Base64.decodeBase64(((String) arguments[i]).getBytes());
-                            in = new ByteArrayInputStream(bytes);
-                        } else if (arguments[i] instanceof byte[]) {
-                            in = new ByteArrayInputStream((byte[]) arguments[i]);
-                        } else {
-                            throw new IllegalArgumentException("RequestFile parameter must be inputstream or file or base64 or byte[]");
+                        if (arguments[i] != null) {
+                            InputStream in = null;
+                            if (arguments[i] instanceof InputStream) {
+                                in = (InputStream) arguments[i];
+                            } else if (arguments[i] instanceof File) {
+                                in = new FileInputStream((File) arguments[i]);
+                            } else if (arguments[i] instanceof String) {
+                                byte[] bytes = Base64.decodeBase64(((String) arguments[i]).getBytes());
+                                in = new ByteArrayInputStream(bytes);
+                            } else if (arguments[i] instanceof byte[]) {
+                                in = new ByteArrayInputStream((byte[]) arguments[i]);
+                            } else {
+                                throw new IllegalArgumentException("RequestFile parameter must be inputstream or file or base64 or byte[]");
+                            }
+                            httpInvoker.data(requestFile.inputName(), requestFile.value(), in);
                         }
-                        httpInvoker.data(requestFile.inputName(), requestFile.value(), in);
-                        break;
                     }
                 }
             }
@@ -104,7 +120,7 @@ public abstract class HttpInvokerUtils {
      * 将对象转成String
      *
      * @param obj
-     * @return
+     * @return String
      */
     private static String toString(Object obj) {
         if (obj instanceof String) {
@@ -139,7 +155,7 @@ public abstract class HttpInvokerUtils {
      * 构造HttpInvokerMethodResult
      *
      * @param method
-     * @return
+     * @return HttpInvokerMethodResult
      */
     private static HttpInvokerMethodResult generateHttpInvokerMethodResult(Method method) {
         boolean isReturnHttpResult = method.getReturnType() == HttpResult.class;
@@ -159,7 +175,7 @@ public abstract class HttpInvokerUtils {
      * 将基本类型转换包装类型
      *
      * @param basicType
-     * @return
+     * @return Type
      */
     private static Type basicTypeToPackageType(Type basicType) {
         if (basicType == int.class) {

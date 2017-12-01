@@ -1,5 +1,6 @@
 package com.chenxiaojie.http.invoker.utils;
 
+import com.google.common.collect.Maps;
 import org.apache.http.annotation.ThreadSafe;
 
 import java.util.ArrayList;
@@ -14,9 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @ThreadSafe
 public abstract class ExtensionLoader {
 
-    private static final Map<Class<?>, Object> extensionMap = new ConcurrentHashMap<Class<?>, Object>();
+    private static final Map<Class<?>, Object> extensionMap = Maps.newConcurrentMap();
 
-    private static final Map<Class<?>, List<?>> extensionListMap = new ConcurrentHashMap<Class<?>, List<?>>();
+    private static final Map<Class<?>, List<?>> extensionListMap = Maps.newConcurrentMap();
 
     public static <T> T getExtension(Class<T> clazz) {
         T extension = (T) extensionMap.get(clazz);

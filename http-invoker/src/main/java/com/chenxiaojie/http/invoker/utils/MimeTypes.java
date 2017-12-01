@@ -1,17 +1,17 @@
 package com.chenxiaojie.http.invoker.utils;
 
 import com.google.common.collect.Maps;
-import org.apache.http.annotation.NotThreadSafe;
+import org.apache.http.annotation.ThreadSafe;
 
 import java.util.Map;
 
 /**
  * Created by chenxiaojie on 2017/9/10.
  */
-@NotThreadSafe
+@ThreadSafe
 public abstract class MimeTypes {
 
-    public static final Map<String, String> MimeType = Maps.newHashMap();
+    public static final Map<String, String> MimeType = Maps.newConcurrentMap();
 
     static {
         MimeType.put(".323", "text/h323");
