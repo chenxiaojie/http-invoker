@@ -4,16 +4,38 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
-        <groupId>com.chenxiaojie</groupId>
-        <artifactId>http-invoker-parent</artifactId>
-        <version>1.0.0</version>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.chenxiaojie</groupId>
     <artifactId>http-invoker</artifactId>
     <name>${artifactId}</name>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <tag>master</tag>
+        <url>git@github.com:chenxiaojie/http-invoker.git</url>
+        <connection>scm:git@github.com:chenxiaojie/http-invoker.git</connection>
+        <developerConnection>scm:git@github.com:chenxiaojie/http-invoker.git</developerConnection>
+    </scm>
+    <developers>
+        <developer>
+            <name>chenxiaojie</name>
+            <email>3262515@qq.com</email>
+            <organization>chenxiaojie</organization>
+            <organizationUrl>http://www.chenxiaojie.com</organizationUrl>
+        </developer>
+    </developers>
 
     <properties>
         <java.src.version>1.7</java.src.version>
@@ -196,18 +218,6 @@
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-                <filtering>true</filtering>
-            </testResource>
-        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

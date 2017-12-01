@@ -44,9 +44,11 @@ import java.util.Map;
 @NotThreadSafe
 public class HttpInvoker {
 
+    private static final Logger logger = LoggerFactory.getLogger(HttpInvoker.class);
+
     private static final Monitor monitor = MonitorLoader.getMonitor();
 
-    private static final String HTTP_TRANSACTION = "HTTP_TRANSACTION";
+    private static final String HTTP_TRANSACTION = "HttpInvoker";
 
     private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
@@ -131,7 +133,8 @@ public class HttpInvoker {
      * @return HttpInvoker
      */
     public HttpInvoker data(String name, String filename, InputStream inputStream) {
-        Args.check(filename.lastIndexOf(".") != -1, "filename must contains dot, such as attachment.png");
+        Args.notEmpty(filename, "filename");
+        Args.notNull(inputStream, "inputStream");
         this.data(Request.Parameter.create(name, filename, inputStream));
         return this;
     }
@@ -388,7 +391,7 @@ public class HttpInvoker {
                 errorMsg = e.getCause().getMessage();
             }
             if (StringUtils.isEmpty(errorMsg)) {
-                errorMsg = "no error message";
+                errorMsg = "has no error message";
             }
             res.log.insert(0, req.method.name() + " error, msg: " + errorMsg + "\n");
             throw new HttpRequestException(res.log.toString(), e);
@@ -543,11 +546,22 @@ public class HttpInvoker {
                     MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create().setCharset(charSet);
                     for (Request.Parameter parameter : parameters) {
                         if (parameter.hasInputStream()) {
-                            String mimeType = MimeTypes.MimeType.get(parameter.value.substring(parameter.value.lastIndexOf(".")));
-                            Args.notBlank(mimeType, "not found mimeType, please MimeTypes.MimeType.put your file MimeType");
+                            //上传文件
+                            String mimeType = null;
+                            if (parameter.value.contains(".")) {
+                                String fileNameSuffix = parameter.value.substring(parameter.value.lastIndexOf(".")).toLowerCase();
+                                mimeType = MimeTypes.MimeType.get(fileNameSuffix);
+                            }
+
+                            if (mimeType == null) {
+                                logger.warn("filename is " + parameter.value + " not found mapper mimeType, default mimeType is application/octet-stream, if need change, do MimeTypes.MimeType.put your MimeType");
+                                mimeType = "application/octet-stream";
+                            }
+
                             ContentType contentType = ContentType.create(mimeType, charSet);
                             multipartEntityBuilder.addBinaryBody(parameter.name, parameter.inputStream, contentType, parameter.value);
                         } else {
+                            //添加kv变量
                             multipartEntityBuilder.addTextBody(parameter.name, parameter.value, ContentType.create("text/plain", charSet));
                         }
                     }
@@ -618,8 +632,6 @@ public class HttpInvoker {
     }
 
     public static class Response {
-
-        private static final Logger logger = LoggerFactory.getLogger(Response.class);
 
         private Charset charSet = DEFAULT_CHARSET;
 

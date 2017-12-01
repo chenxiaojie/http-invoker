@@ -5,21 +5,11 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
-
     <groupId>com.chenxiaojie</groupId>
     <artifactId>http-invoker-parent</artifactId>
     <name>http-invoker-parent</name>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>pom</packaging>
-
-    <modules>
-        <module>http-invoker</module>
-    </modules>
 
     <licenses>
         <license>
@@ -43,4 +33,8 @@
         </developer>
     </developers>
 
+    <modules>
+        <module>http-invoker</module>
+        <module>http-invoker-demo-web</module>
+    </modules>
 </project>

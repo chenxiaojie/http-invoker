@@ -120,8 +120,8 @@ public class HttpInvokerTest {
                 .data("employeeId", "00160043")
                 .data(ImmutableMap.of("employeeName", "陈孝杰3"))
                 .data("ad", "xiaojie.chen", "ad", "xiaojie.chen3")
-                .data("fileinput", "attachment.png", in)
-                .data("fileinput2", "attachment2.png", in2)
+                .data("fileinput", "attachment.pNg", in)
+                .data("fileinput2", "attachment", in2)
                 .post();
 
         response.log();

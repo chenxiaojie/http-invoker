@@ -19,7 +19,7 @@
 <dependency>
     <groupId>com.chenxiaojie</groupId>
     <artifactId>http-invoker</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
@@ -479,8 +479,7 @@ log4j2.xml
             </Policies>
         </RollingFile>
 
-        <RollingFile name="HttpAppender" fileName="${log-path}/http.log"
-                     filePattern="${log-path}/http.log.%d{yyyy-MM-dd}">
+        <RollingFile name="HttpAppender" fileName="${log-path}/http.log" filePattern="${log-path}/http.log.%d{yyyy-MM-dd}">
             <PatternLayout pattern="${pattern}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
@@ -494,7 +493,7 @@ log4j2.xml
     </Appenders>
 
     <loggers>
-        <logger name="com.chenxiaojie.http.invoker.HttpInvoker$Response" additivity="false">
+        <logger name="com.chenxiaojie.http.invoker.HttpInvoker" additivity="false">
             <appender-ref ref="HttpAppender"/>
             <appender-ref ref="ConsoleAppender"/>
         </logger>

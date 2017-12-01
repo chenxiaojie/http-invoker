@@ -34,7 +34,7 @@ public class HttpClientBuilder {
     /**
      * 线程池获取超时时间
      */
-    private int connectionRequestTimeout = 1000;
+    private int connectionRequestTimeout = 2000;
 
     /**
      * 服务器连接超时时间
@@ -49,7 +49,7 @@ public class HttpClientBuilder {
     /**
      * 最大连接数
      */
-    private int maxConnections = 100;
+    private int maxConnections = 50;
 
     /**
      * 连接域名数
