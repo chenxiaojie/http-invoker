@@ -1,17 +1,17 @@
 ## 基于apache httpclient的轻量http请求
 
 ### 特性
-> 1.  封装了httpclient, 仅暴露常用的配置, 将常见的坑填上
-> 2.  接口设计参考jsoup http, 十分便捷的请求让人耳目一新
-> 3.  支持所有的请求方式, GET,POST,PUT,DELETE,PATCH,HEAD,OPTIONS,TRACE
-> 4.  可以像rpc请求一样发http请求, 代码更加规范稳定, 易于管理
-> 5.  出参入参对json极为友好, 自动解析返回对象to pojo
-> 6.  当返回值为HttpResult时, 调用失败也不会抛出异常. GET请求不建议使用HttpResult, 非GET如POST/PUT/DELETE请求都建议使用HttpResult
-> 7.  支持返回值取jsonPath, 例如:msg.user.id/msg.user[1].id 参考测试包下com.chenxiaojie.http.invoker.test.http.test.ResultJsonPathTest
-> 8.  支持设计重试次数, 建议get请求都有重试机制, 参考测试包下com.chenxiaojie.http.invoker.test.http.test.RetryTest
-> 9.  支持上传各种类型的文件, 支持File/InputStream/byte[]/base64上传, 参考测试包下com.chenxiaojie.http.invoker.test.http.test.UploadFileTest
-> 10. 支持@PathVariable 如 http://*.com/{key}/info -> http://*.com/xiaojie.chen/info, 参考测试包下com.chenxiaojie.http.invoker.test.http.test.SimpleTest
-> 11. 支持请求拦截器和自定义httpclient, 参考com.chenxiaojie.http.invoker.test.http.test.CustomHttpClientTest
+> 1.  基于httpclient, 仅暴露常用的配置, 填掉了常见的坑
+> 2.  接口设计参考jsoup, 简易的语法让人耳目一新
+> 3.  支持所有的请求方法:GET,POST,PUT,DELETE,PATCH,HEAD,OPTIONS,TRACE
+> 4.  出参入参对json极为友好, 自动解析返回对象to pojo
+> 5.  可以像rpc一样基于java api发送http请求, 代码更加规范稳定, 易于管理
+> 6.  当返回值为HttpResult时, 调用失败也不会抛出异常.
+> 7.  支持返回值取json path, 例如:msg.user.id/msg.user[1].id 参考测试包下 ResultJsonPathTest
+> 8.  支持设计重试次数, 建议get请求都有重试机制, 参考测试包下 RetryTest
+> 9.  支持上传各种类型的文件, 支持File/InputStream/byte[]/base64上传, 参考测试包下 UploadFileTest
+> 10. 支持@PathVariable 如 http://*.com/{key}/info -> http://*.com/xiaojie.chen/info, 参考测试包下 SimpleTest
+> 11. 支持请求拦截器和自定义httpclient, 参考 CustomHttpClientTest
 
 ### 添加依赖
 
@@ -50,9 +50,9 @@
 
 ### 快速入门
 
-http-invoker-demo-web module是专门用于测试, 运行以下代码时, 请先启动这个web项目
+http-invoker-demo-web 是专门用于测试, 运行以下代码时, 请先启动这个web项目
 
-##### 使用HttpInvoker, 参考测试包下com.chenxiaojie.http.invoker.test.httpinvoker.HttpInvokerTest
+##### 使用HttpInvoker, 参考测试包下 HttpInvokerTest
 
 ```java
 
@@ -66,7 +66,6 @@ public void testGet() {
                     .get();
     
     response.log();
-    Assert.assertTrue(response.isSuccess());
 }
    
 
@@ -84,7 +83,6 @@ public void testPost() {
             .post();
 
     response.log();
-    Assert.assertTrue(response.isSuccess());
 }
 
 
@@ -121,7 +119,6 @@ public void testCookie() {
             .get();
 
     response.log();
-    Assert.assertTrue(response.isSuccess());
 }
 
 
@@ -150,7 +147,6 @@ public void testInterceptor() {
             .get();
 
     response.log();
-    Assert.assertTrue(response.isSuccess());
 }
 ```
 
@@ -252,15 +248,51 @@ System.out.println(response.getData());
 </beans>
 ```
 
-测试类请参考com.chenxiaojie.http.invoker.test.http.test.SimpleTest
-
-
 ### 建议
 
 ##### 如果请求量比较大, 请尽量自定义httpclient, 否则全局共享一个默认的httpclient
 ##### 如果请求量比较大, 请将http请求详细日志重置到其他位置或者关闭
 
-日志位置重置
+日志位置重置,如果您的项目中没有依赖slf4j,请添加以下配置
+
+```xml
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>1.7.2</version>
+</dependency>
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>jcl-over-slf4j</artifactId>
+    <version>1.7.2</version>
+    <scope>provided</scope>
+</dependency>
+<!-- log4j2 -->
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-1.2-api</artifactId>
+    <version>2.7</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-api</artifactId>
+    <version>2.7</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.7</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-slf4j-impl</artifactId>
+    <version>2.7</version>
+    <scope>provided</scope>
+</dependency>
+```
 
 log4j2.xml
 
@@ -346,4 +378,3 @@ mvn clean install -DskipTests -Dmaven.javadoc.skip=true
 ### 维护
 
 有任何问题请随时联系:陈孝杰, qq:3262515, email: 3262515@qq.com
-
