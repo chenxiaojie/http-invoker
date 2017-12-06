@@ -32,12 +32,8 @@ public class HttpInvokerTest {
     @Test
     public void testGet() {
         HttpInvoker.Response response = HttpInvoker.builder()
-                .uri(Consts.URL + "/simple/1")
-                .data("employeeId", "00160041")
-                .data(ImmutableMap.of("employeeName", "陈孝杰1"))
-                .data("ad", "xiaojie.chen", "ad", "xiaojie.chen1")
-                .method(HttpMethod.GET)
-                .execute();
+                .uri("https://www.dianping.com")
+                .get();
 
         response.log();
         Assert.assertTrue(response.isSuccess());

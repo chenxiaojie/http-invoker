@@ -9,6 +9,13 @@ import org.apache.http.annotation.NotThreadSafe;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLInitializationException;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
@@ -49,7 +56,7 @@ public class HttpClientBuilder {
     /**
      * 最大连接数
      */
-    private int maxConnections = 50;
+    private int maxConnections = 200;
 
     /**
      * 连接域名数
@@ -60,6 +67,11 @@ public class HttpClientBuilder {
      * 是否重定向
      */
     private boolean followRedirects = false;
+
+    /**
+     * 是否使用系统的ssl
+     */
+    private boolean useSystemSSL = false;
 
     /**
      * 默认头部
@@ -112,6 +124,11 @@ public class HttpClientBuilder {
 
     public HttpClientBuilder followRedirects(boolean followRedirects) {
         this.followRedirects = followRedirects;
+        return this;
+    }
+
+    public HttpClientBuilder useSystemSSL(boolean useSystemSSL) {
+        this.useSystemSSL = useSystemSSL;
         return this;
     }
 
@@ -169,10 +186,24 @@ public class HttpClientBuilder {
                 .setSocketTimeout(socketTimeout)
                 .build();
 
+        LayeredConnectionSocketFactory ssl = null;
+        if (useSystemSSL) {
+            try {
+                ssl = SSLConnectionSocketFactory.getSystemSocketFactory();
+            } catch (final SSLInitializationException e) {
+                ssl = null;
+            }
+        }
+
+        Registry<ConnectionSocketFactory> sfr = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                .register("https", ssl != null ? ssl : SSLConnectionSocketFactory.getSocketFactory())
+                .build();
+
         /**
          * 线程池
          */
-        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(sfr);
 
         /**
          * 设置总共最大连接数
@@ -183,6 +214,11 @@ public class HttpClientBuilder {
          * 设置每个路由(host)最大连接数
          */
         connectionManager.setDefaultMaxPerRoute(maxConnections / hostCount);
+
+        /**
+         * 空闲链接检查时间
+         */
+        connectionManager.setValidateAfterInactivity(1000);
 
         /**
          * 添加cookie

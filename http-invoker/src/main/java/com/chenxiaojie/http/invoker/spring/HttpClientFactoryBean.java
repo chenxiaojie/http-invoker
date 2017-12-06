@@ -48,6 +48,11 @@ public class HttpClientFactoryBean implements FactoryBean<HttpClient> {
     private boolean followRedirects = false;
 
     /**
+     * 是否使用系统的ssl
+     */
+    private boolean useSystemSSL = false;
+
+    /**
      * 默认头部
      */
     private List<Header> headers = Lists.newArrayList();
@@ -62,36 +67,80 @@ public class HttpClientFactoryBean implements FactoryBean<HttpClient> {
      */
     private CookieStore cookieStore;
 
+    public int getConnectionRequestTimeout() {
+        return connectionRequestTimeout;
+    }
+
     public void setConnectionRequestTimeout(int connectionRequestTimeout) {
         this.connectionRequestTimeout = connectionRequestTimeout;
+    }
+
+    public int getConnectTimeout() {
+        return connectTimeout;
     }
 
     public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
     }
 
+    public int getSocketTimeout() {
+        return socketTimeout;
+    }
+
     public void setSocketTimeout(int socketTimeout) {
         this.socketTimeout = socketTimeout;
+    }
+
+    public int getMaxConnections() {
+        return maxConnections;
     }
 
     public void setMaxConnections(int maxConnections) {
         this.maxConnections = maxConnections;
     }
 
+    public int getHostCount() {
+        return hostCount;
+    }
+
     public void setHostCount(int hostCount) {
         this.hostCount = hostCount;
+    }
+
+    public boolean isFollowRedirects() {
+        return followRedirects;
     }
 
     public void setFollowRedirects(boolean followRedirects) {
         this.followRedirects = followRedirects;
     }
 
+    public boolean isUseSystemSSL() {
+        return useSystemSSL;
+    }
+
+    public void setUseSystemSSL(boolean useSystemSSL) {
+        this.useSystemSSL = useSystemSSL;
+    }
+
+    public List<Header> getHeaders() {
+        return headers;
+    }
+
     public void setHeaders(List<Header> headers) {
         this.headers = headers;
     }
 
+    public List<Cookie> getCookies() {
+        return cookies;
+    }
+
     public void setCookies(List<Cookie> cookies) {
         this.cookies = cookies;
+    }
+
+    public CookieStore getCookieStore() {
+        return cookieStore;
     }
 
     public void setCookieStore(CookieStore cookieStore) {
@@ -107,6 +156,7 @@ public class HttpClientFactoryBean implements FactoryBean<HttpClient> {
                 .maxConnections(maxConnections)
                 .hostCount(hostCount)
                 .followRedirects(followRedirects)
+                .useSystemSSL(useSystemSSL)
                 .headers(headers)
                 .cookies(cookies)
                 .cookieStore(cookieStore)

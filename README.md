@@ -59,13 +59,9 @@ http-invoker-demo-web 是专门用于测试, 运行以下代码时, 请先启动
 @Test
 public void testGet() {
      HttpInvoker.Response response = HttpInvoker.builder()
-                    .uri(Consts.URL + "/simple/2")
-                    .data("employeeId", "00160042")
-                    .data(ImmutableMap.of("employeeName", "陈孝杰2"))
-                    .data("ad", "xiaojie.chen", "ad", "xiaojie.chen2")
-                    .get();
-    
-    response.log();
+                     .uri("https://www.dianping.com")
+                     .get();
+     response.log();
 }
    
 
@@ -265,32 +261,27 @@ System.out.println(response.getData());
     <groupId>org.slf4j</groupId>
     <artifactId>jcl-over-slf4j</artifactId>
     <version>1.7.2</version>
-    <scope>provided</scope>
 </dependency>
 <!-- log4j2 -->
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-1.2-api</artifactId>
     <version>2.7</version>
-    <scope>provided</scope>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-api</artifactId>
     <version>2.7</version>
-    <scope>provided</scope>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-core</artifactId>
     <version>2.7</version>
-    <scope>provided</scope>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-slf4j-impl</artifactId>
     <version>2.7</version>
-    <scope>provided</scope>
 </dependency>
 ```
 
