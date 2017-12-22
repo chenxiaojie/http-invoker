@@ -100,7 +100,7 @@ public class HttpInvokerTest {
         HttpInvoker.Response response = HttpInvoker.builder()
                 .uri(Consts.URL + "/simple?employeeName=employeeName陈孝杰")
                 .data("ad", "xiaojie.chen", "ad", "xiaojie.chen3")
-                .json(JSON.toJSONString(userLoginModel))
+                .json(userLoginModel)
                 .post();
 
         response.log();
